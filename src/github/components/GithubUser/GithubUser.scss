@@ -1,0 +1,14 @@
+.container {
+    margin: 20px 10% 0;
+    .github-user-wrapper {
+        display: grid;
+        align-items: start;
+        grid-template-columns: 1fr 4fr;
+        grid-column-gap: 20px;
+    }
+    @media only screen and (max-width: 600px) {
+        .github-user-wrapper {
+            display: block;
+        }
+    }
+}

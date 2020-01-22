@@ -1,0 +1,31 @@
+.bio-wrapper {
+    display: grid;
+    grid-row-gap: 20px;
+    .name {
+        font-size: 18px;
+    }
+    .user-name, .more-info {
+        font-size: 13px;
+        color: #666666;
+    }
+    img.avatar {
+        width: 100%;
+        border-radius: 5px;
+    }
+    .bio {
+        font-size: 10px;
+        color: #666666;
+    }
+    .more-info {
+        display: grid;
+        grid-row-gap: 10px;
+        color: #111111;
+    }
+    .country, .company {
+        display: flex;
+        align-items: center;
+    }
+    button {
+        height: 30px;
+    }
+}
