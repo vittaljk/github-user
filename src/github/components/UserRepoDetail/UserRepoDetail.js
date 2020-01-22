@@ -6,6 +6,7 @@ import moment from 'moment';
 import LicenseLogo from '../../../assets/license.svg';
 import StarIcon from '../../../assets/star.svg';
 import Select from 'react-select';
+import _ from 'lodash';
 
 const options = [
     { value: 'chocolate', label: 'Chocolate' },
@@ -13,24 +14,69 @@ const options = [
     { value: 'vanilla', label: 'Vanilla' },
 ];
 
+const typeOptions = [
+    { value: ''}
+];
+
 function UserRepoDetail() {
     const [repos, setRepos] = useState([]);
-    const [type, setType] = useState(null)
+    const [types, setTypes] = useState([]);
+    const [selectedType, setSelectedType] = useState(null);
+    const [languages, setLanguages] = useState([]);
+    const [selectedLanguage, setSelectedLanguage] = useState(null);
 
-    useEffect(() => {
+    const getRepos = () => {
         Axios.get('https://api.github.com/users/supreetsingh247/repos')
             .then(({ status, data }) => {
                 if (status === 200) {
                     setRepos(data);
-                    console.log(data);
+                    let languages = [];
+                    data.forEach(repo => {
+                        if (repo.language && repo.language) {
+                            languages.push({ value: repo.language, label: repo.language });
+                        }
+                    });
+                    languages = _.uniqBy(languages, 'value');
+                    setLanguages(languages);
                 }
             })
             .catch(e => console.log(e))
+    }
+
+    useEffect(() => {
+        getRepos();
     }, []);
 
     const handleTypeChange = value => {
-        setType(value);
+        setSelectedType(value);
     }
+
+    const handleLanguageChange = ({value}) => {
+        setSelectedLanguage(value);
+        let reposCopy = [ ...repos ];
+        reposCopy = reposCopy.filter(repo => {
+            if (repo.language) {
+                return repo.language.includes(value);
+            }
+            return false;
+        });
+        setRepos(reposCopy);
+    }
+
+    const searchHandler = e => {
+        const value = e.target.value;
+        if (value === '') {
+            getRepos();
+            return;
+        }
+        let reposCopy = [ ...repos ];
+        reposCopy = reposCopy.filter(repo => repo.name.includes(value));
+        setRepos(reposCopy);
+    }
+
+    // applyFilters = () => {
+
+    // }
 
     return (
         <div className="user-repo-detail">
@@ -46,17 +92,17 @@ function UserRepoDetail() {
             </div>
 
             <div className="search-wrapper">
-                <SearchBar />
+                <SearchBar searchHandler={searchHandler}/>
                 <Select
-                    value={type}
+                    value={selectedType}
                     onChange={handleTypeChange}
-                    options={options}
+                    options={types}
                     placeholder="Type"
                 />
                 <Select
-                    value={type}
-                    onChange={handleTypeChange}
-                    options={options}
+                    value={selectedLanguage}
+                    onChange={handleLanguageChange}
+                    options={languages}
                     placeholder="Language"
                 />
                 <button className="new-btn">New</button>
