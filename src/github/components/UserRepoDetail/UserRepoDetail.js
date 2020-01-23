@@ -7,20 +7,12 @@ import LicenseLogo from '../../../assets/license.svg';
 import StarIcon from '../../../assets/star.svg';
 import Select from 'react-select';
 import _ from 'lodash';
-
-const options = [
-    { value: 'chocolate', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' },
-];
-
-const typeOptions = [
-    { value: ''}
-];
+import { typeOptions } from '../../../model';
 
 function UserRepoDetail() {
     const [repos, setRepos] = useState([]);
-    const [types, setTypes] = useState([]);
+    const [filteredRepos, setFilteredRepos] = useState([]);
+    const [searchText, setSearchText] = useState(null);
     const [selectedType, setSelectedType] = useState(null);
     const [languages, setLanguages] = useState([]);
     const [selectedLanguage, setSelectedLanguage] = useState(null);
@@ -30,6 +22,7 @@ function UserRepoDetail() {
             .then(({ status, data }) => {
                 if (status === 200) {
                     setRepos(data);
+                    setFilteredRepos(data);
                     let languages = [];
                     data.forEach(repo => {
                         if (repo.language && repo.language) {
@@ -47,20 +40,17 @@ function UserRepoDetail() {
         getRepos();
     }, []);
 
-    const handleTypeChange = value => {
+    useEffect(() => {
+        applyFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchText, selectedType, selectedLanguage]);
+
+    const handleTypeChange = ({value}) => {
         setSelectedType(value);
     }
 
     const handleLanguageChange = ({value}) => {
         setSelectedLanguage(value);
-        let reposCopy = [ ...repos ];
-        reposCopy = reposCopy.filter(repo => {
-            if (repo.language) {
-                return repo.language.includes(value);
-            }
-            return false;
-        });
-        setRepos(reposCopy);
     }
 
     const searchHandler = e => {
@@ -69,19 +59,53 @@ function UserRepoDetail() {
             getRepos();
             return;
         }
-        let reposCopy = [ ...repos ];
-        reposCopy = reposCopy.filter(repo => repo.name.includes(value));
-        setRepos(reposCopy);
+        setSearchText(value);
     }
 
-    // applyFilters = () => {
+    const applyFilters = () => {
+        let reposCopy = [ ...repos ];
+        if (searchText) {
+            reposCopy = reposCopy.filter(repo => repo.name.includes(searchText));
+        }
+        if (selectedLanguage) {
+            reposCopy = reposCopy.filter(repo => {
+                if (repo.language) {
+                    return repo.language.includes(selectedLanguage);
+                }
+                return false;
+            });
+        }
+        if (selectedType) {
+            switch (selectedType) {
+                case 'all':
+                    reposCopy = [ ...repos ];
+                    break;
+                
+                case 'public':
+                    reposCopy = reposCopy.filter(repo => repo.private === false)
+                    break;
 
-    // }
+                
+                case 'private':
+                    reposCopy = reposCopy.filter(repo => repo.private === true)
+                    break;
+
+                case 'archived':
+                    reposCopy = reposCopy.filter(repo => repo.archived === true)
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        setFilteredRepos(reposCopy);
+    }
 
     return (
         <div className="user-repo-detail">
             <div className="tab">
                 <div className="tab-wrapper">
+                    {/* TODO: remove hard coding */}
                     <div className="tab-item">Overview</div>
                     <div className="tab-item active">Repositories&nbsp;&nbsp;<span>11</span></div>
                     <div className="tab-item">Stars&nbsp;&nbsp;<span>5</span></div>
@@ -96,7 +120,7 @@ function UserRepoDetail() {
                 <Select
                     value={selectedType}
                     onChange={handleTypeChange}
-                    options={types}
+                    options={typeOptions}
                     placeholder="Type"
                 />
                 <Select
@@ -109,8 +133,8 @@ function UserRepoDetail() {
             </div>
 
             <div className="repo-wrapper">
-                {repos &&
-                    repos.map(repo => (
+                {filteredRepos &&
+                    filteredRepos.map(repo => (
                         <div className="repo" key={repo.id}>
                             <div className="name">
                                 <a href={repo.html_url}>{repo.name}</a>
