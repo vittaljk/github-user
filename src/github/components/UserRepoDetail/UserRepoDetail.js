@@ -9,6 +9,8 @@ import Select from 'react-select';
 import _ from 'lodash';
 import { typeOptions, getGithubUserReposUrl } from '../../../model';
 
+const valueFromId = (opts, id) => opts.find(o => o.value === id);
+
 function UserRepoDetail() {
     const [repos, setRepos] = useState([]);
     const [filteredRepos, setFilteredRepos] = useState([]);
@@ -118,13 +120,13 @@ function UserRepoDetail() {
             <div className="search-wrapper">
                 <SearchBar searchHandler={searchHandler}/>
                 <Select
-                    value={selectedType}
+                    value={valueFromId(typeOptions)}
                     onChange={handleTypeChange}
                     options={typeOptions}
                     placeholder="Type"
                 />
                 <Select
-                    value={selectedLanguage}
+                    value={valueFromId(languages)}
                     onChange={handleLanguageChange}
                     options={languages}
                     placeholder="Language"
