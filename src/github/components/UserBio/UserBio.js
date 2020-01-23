@@ -3,12 +3,13 @@ import Axios from 'axios';
 import LocationLogo from '../../../assets/location.svg';
 import CorporateLogo from '../../../assets/corporate.svg';
 import './UserBio.scss';
+import { getGithubUserUrl } from '../../../model';
 
 const UserBio = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        Axios.get('https://api.github.com/users/supreetsingh247')
+        Axios.get(getGithubUserUrl())
         .then(({ status, data }) => {
             if (status === 200) {
                 setUser(data);

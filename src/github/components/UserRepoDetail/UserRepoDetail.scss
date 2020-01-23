@@ -59,11 +59,8 @@
         }
     }
     .repo-wrapper {
-        display: grid;
-        grid-row-gap: 30px;
         .repo {
             border-top: solid 1px #d1d5da;
-            border-bottom: solid 1px #d1d5da;
             padding: 20px 0;
             display: grid;
             grid-row-gap: 10px;

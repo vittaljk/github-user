@@ -7,7 +7,7 @@ import LicenseLogo from '../../../assets/license.svg';
 import StarIcon from '../../../assets/star.svg';
 import Select from 'react-select';
 import _ from 'lodash';
-import { typeOptions } from '../../../model';
+import { typeOptions, getGithubUserReposUrl } from '../../../model';
 
 function UserRepoDetail() {
     const [repos, setRepos] = useState([]);
@@ -18,7 +18,7 @@ function UserRepoDetail() {
     const [selectedLanguage, setSelectedLanguage] = useState(null);
 
     const getRepos = () => {
-        Axios.get('https://api.github.com/users/supreetsingh247/repos')
+        Axios.get(getGithubUserReposUrl())
             .then(({ status, data }) => {
                 if (status === 200) {
                     setRepos(data);
