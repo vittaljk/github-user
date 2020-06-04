@@ -67,7 +67,7 @@ function UserRepoDetail() {
     const applyFilters = () => {
         let reposCopy = [ ...repos ];
         if (searchText) {
-            reposCopy = reposCopy.filter(repo => repo.name.includes(searchText));
+            reposCopy = reposCopy.filter(repo => repo.name.toLowerCase().includes(searchText.toLowerCase()));
         }
         if (selectedLanguage) {
             reposCopy = reposCopy.filter(repo => {
